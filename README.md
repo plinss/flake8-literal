@@ -87,8 +87,10 @@ Examples
 
 ```
 x = "value"  <-- LIT001
-x = 'aren\'t escapes great?'  <-- LIT010
-x = ('one'  <-- LIT012
+x = 'aren\'t escapes great?'  <-- LIT011
+x = "can\'t stop escaping"  <-- LIT013
+x = ('one'  <-- LIT015
      "o'clock")
-x = r'no need to be raw'  <-- LIT020
+x = r'no need to be raw'  <-- LIT021
+x = '\\windows\\path'  <-- LIT022
 ```

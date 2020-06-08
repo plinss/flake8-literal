@@ -10,7 +10,7 @@ with open("README.md", "r") as readme_file:
 
 setuptools.setup(
 	name='flake8-literal',
-	version='0.0.0',  # version will get replaced by git version tag - do not edit
+	version='1.999.999-dev',  # version will get replaced by git version tag - do not edit
 	author='Peter Linss',
 	author_email='pypi@linss.com',
 	description='Flake8 string literal validation',
@@ -36,12 +36,14 @@ setuptools.setup(
 			'flake8-datetimez',
 			'flake8-docstrings',
 			'flake8-import-order',
+			'flake8-noqa',
 			'flake8-polyfill',
 			'flake8-tabs',
 			# 'flake8-smart-tabs',
 			'flake8-type-annotations',
 			'pep8-naming',
 		],
+		'test': [],
 	},
 	classifiers=[
 		"Framework :: Flake8",
