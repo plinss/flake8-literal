@@ -64,15 +64,22 @@ Error Codes
 
 | Code   | Message |
 |--------|---------|
-| LIT001 | Use single/double quotes for string
-| LIT002 | Use single/double quotes for multiline string
-| LIT003 | Use single/double quotes for docstring
-| LIT004 | Use triple single/double quotes for docstring
-| LIT010 | Use double/single quotes for string to avoid escaped single quote
-| LIT011 | Escaped single/double quote is not necessary
-| LIT012 | Use double/single quotes for continuation strings to match
-| LIT020 | Remove raw prefix when not using escapes
-| LIT021 | Use raw prefix to avoid escaped slash
+| LIT001 | Use single quotes for string
+| LIT002 | Use double quotes for string
+| LIT003 | Use single quotes for multiline string
+| LIT004 | Use double quotes for multiline string
+| LIT005 | Use single quotes for docstring
+| LIT006 | Use double quotes for docstring
+| LIT007 | Use triple single quotes for docstring
+| LIT008 | Use triple double quotes for docstring
+| LIT011 | Use double quotes for string to avoid escaped single quote
+| LIT012 | Use single quotes for string to avoid escaped single quote
+| LIT013 | Escaped single quote is not necessary
+| LIT014 | Escaped double quote is not necessary
+| LIT015 | Use double quotes for continuation strings to match
+| LIT016 | Use single quotes for continuation strings to match
+| LIT021 | Remove raw prefix when not using escapes
+| LIT022 | Use raw prefix to avoid escaped slash
 
 
 Examples
