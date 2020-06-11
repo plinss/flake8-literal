@@ -50,10 +50,10 @@ Options
 : Disable escape avoidance in inline string literals
 
 `literal-include-name`
-: Include plugin name in messages (default setting)
+: Include plugin name in messages
 
 `literal-no-include-name`
-: Remove plugin name from messages
+: Do not include plugin name in messages (default setting)
 
 All options may be specified on the command line with a `--` prefix,
 or can be placed in your flake8 config file.

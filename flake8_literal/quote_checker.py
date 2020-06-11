@@ -174,7 +174,7 @@ class QuoteChecker:
 		option_manager.add_option('--literal-no-avoid-escape', default=None, action='store_false',
 		                          parse_from_config=False, dest='literal_avoid_escape',
 		                          help='Disable escape avoidance in inline string literals')
-		option_manager.add_option('--literal-include-name', default=True, action='store_true',
+		option_manager.add_option('--literal-include-name', default=False, action='store_true',
 		                          parse_from_config=True, dest='literal_include_name',
 		                          help='Include plugin name in messages (enabled by default)')
 		option_manager.add_option('--literal-no-include-name', default=None, action='store_false',
