@@ -5,7 +5,7 @@ import flake8_literal
 import setuptools
 
 
-with open("README.md", "r") as readme_file:
+with open('README.md', 'r') as readme_file:
 	long_description = readme_file.read()
 
 setuptools.setup(
@@ -15,7 +15,7 @@ setuptools.setup(
 	author_email='pypi@linss.com',
 	description='Flake8 string literal validation',
 	long_description=long_description,
-	long_description_content_type="text/markdown",
+	long_description_content_type='text/markdown',
 	url='https://github.com/plinss/flake8-literal/',
 
 	packages=['flake8_literal'],
@@ -23,6 +23,7 @@ setuptools.setup(
 
 	install_requires=[
 		'flake8>=3.8.0,<4.0',
+		'setuptools>=40.0.0',
 		'typing_extensions>=3.7.4.2,<4.0',
 	],
 	extras_require={
@@ -46,22 +47,23 @@ setuptools.setup(
 		'test': [],
 	},
 	classifiers=[
-		"Framework :: Flake8",
-		"Environment :: Console",
-		"Intended Audience :: Developers",
-		"License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
-		"Programming Language :: Python",
-		"Programming Language :: Python :: 3",
-		"Programming Language :: Python :: 3.6",
-		"Programming Language :: Python :: 3.7",
-		"Programming Language :: Python :: 3.8",
-		"Topic :: Software Development :: Libraries :: Python Modules",
-		"Topic :: Software Development :: Quality Assurance",
+		'Framework :: Flake8',
+		'Environment :: Console',
+		'Intended Audience :: Developers',
+		'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
+		'Programming Language :: Python',
+		'Programming Language :: Python :: 3',
+		'Programming Language :: Python :: 3.6',
+		'Programming Language :: Python :: 3.7',
+		'Programming Language :: Python :: 3.8',
+		'Topic :: Software Development :: Libraries :: Python Modules',
+		'Topic :: Software Development :: Quality Assurance',
 	],
 	python_requires='>=3.6',
 	entry_points={
 		'flake8.extension': [
 			f'{flake8_literal.quote_checker_prefix} = flake8_literal.quote_checker:QuoteChecker',
+			f'{flake8_literal.raw_checker_prefix} = flake8_literal.raw_checker:RawChecker',
 		],
 	},
 )

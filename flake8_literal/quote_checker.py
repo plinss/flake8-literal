@@ -2,33 +2,13 @@
 
 import enum
 import tokenize
-from typing import ClassVar, FrozenSet, Iterator, List, NamedTuple, Optional, Sequence, Set, Tuple
+from typing import ClassVar, Iterator, NamedTuple, Optional, Sequence, Tuple
 
 from flake8.options.manager import OptionManager
 
 import flake8_literal
 
-from typing_extensions import Protocol
-
-
-try:
-	import pkg_resources
-	package_version = pkg_resources.get_distribution(__package__).version
-except pkg_resources.DistributionNotFound:
-	package_version = 'unknown'
-
-
-IGNORE_TOKENS = frozenset((
-	tokenize.ENCODING,
-	tokenize.NEWLINE,
-	tokenize.INDENT,
-	tokenize.DEDENT,
-	tokenize.NL,
-	tokenize.COMMENT,
-))
-
-OPEN_BRACKET = frozenset(('(', '[', '{'))
-CLOSE_BRACKET = frozenset((')', ']', '}'))
+from . import checker
 
 
 class Message(enum.Enum):
@@ -124,14 +104,13 @@ MATCH_CONTINUATION_MESSAGE = {
 }
 
 
-class Options(Protocol):
+class Options(checker.Options):
 	"""Protocol for options."""
 
 	literal_inline: str
 	literal_multiline: str
 	literal_docstring: str
 	literal_avoid_escape: bool
-	literal_include_name: bool
 
 
 class Config(NamedTuple):
@@ -143,16 +122,10 @@ class Config(NamedTuple):
 	avoid_escape: bool
 
 
-class QuoteChecker:
+class QuoteChecker(checker.Checker):
 	"""Check string literals for proper quotes."""
 
-	name: ClassVar[str] = __package__.replace('_', '-')
-	version: ClassVar[str] = package_version
-	plugin_name: ClassVar[str]
 	config: ClassVar[Config]
-
-	tokens: Sequence[tokenize.TokenInfo]
-	_docstring_tokens: Optional[FrozenSet[tokenize.TokenInfo]]
 
 	@classmethod
 	def add_options(cls, option_manager: OptionManager) -> None:
@@ -182,60 +155,16 @@ class QuoteChecker:
 		                          help='Remove plugin name from messages')
 
 	@classmethod
-	def parse_options(cls, options: Options) -> None:
-		cls.plugin_name = (' (' + cls.name + ')') if (options.literal_include_name) else ''
+	def parse_options(cls, options: Options) -> None:  # type: ignore[override]
+		super().parse_options(options)
 		cls.config = Config(inline=QuoteType.from_str(options.literal_inline) or QuoteType.SINGLE,
 		                    multiline=QuoteType.from_str(options.literal_multiline) or QuoteType.SINGLE,
 		                    docstring=QuoteType.from_str(options.literal_docstring) or QuoteType.DOUBLE,
 		                    avoid_escape=options.literal_avoid_escape)
 
-	def __init__(self, logical_line: str, previous_logical: str, tokens: Sequence[tokenize.TokenInfo]) -> None:
-		self.tokens = tokens
-		self._docstring_tokens = None
-
-	def _message(self, token: tokenize.TokenInfo, message: Message, **kwargs) -> Tuple[Tuple[int, int], str]:
-		return (token.start, f'{message.code}{self.plugin_name} {message.text(**kwargs)}')
-
-	@property
-	def docstring_tokens(self) -> FrozenSet[tokenize.TokenInfo]:
-		"""Find docstring tokens, which are initial strings or strings immediately after class or function defs."""
-		if (self._docstring_tokens is None):
-			docstrings: Set[tokenize.TokenInfo] = set()
-			expect_docstring = True
-			expect_colon = False
-			bracket_depth = 0
-			for token in self.tokens:
-				if (token.type in IGNORE_TOKENS):
-					continue
-				if (tokenize.STRING == token.type):
-					if (expect_docstring):
-						docstrings.add(token)
-				else:
-					expect_docstring = False
-					if ((tokenize.NAME == token.type) and (token.string in ('class', 'def'))):
-						expect_colon = True
-						bracket_depth = 0
-					elif (tokenize.OP == token.type):
-						if (':' == token.string):
-							if (0 == bracket_depth):
-								if (expect_colon):
-									expect_docstring = True
-								expect_colon = False
-						elif (token.string in OPEN_BRACKET):
-							bracket_depth += 1
-						elif (token.string in CLOSE_BRACKET):
-							bracket_depth -= 1
-			self._docstring_tokens = frozenset(docstrings)
-		return self._docstring_tokens
-
 	def _process_literals(self, tokens: Sequence[tokenize.TokenInfo]) -> Iterator[Tuple[Tuple[int, int], str]]:
 		if (not tokens):
 			return
-
-		# check for multiline no continuations with those
-		# if all desired quote then all good
-		# if all same and one needs escape (and avoid_escape) then all good
-		# if differs but needs to avoid escape then OK
 
 		desired = QUOTE[self.config.inline]
 		other = OTHER_QUOTE[self.config.inline]
@@ -263,17 +192,6 @@ class QuoteChecker:
 
 			else:  # inline
 				contents = string[1:-1]
-
-				if (('r' in prefix) and not ('\\' in contents)):
-					yield self._message(token, Message.UNNECESSARY_RAW)
-				if (('r' not in prefix) and (r'\\' in contents) and ('\\' not in contents.replace(r'\\', '')) and self.config.avoid_escape):
-					trail_count = 0
-					test_contents = contents
-					while test_contents.endswith(r'\\'):
-						test_contents = test_contents[:-2]
-						trail_count += 1
-					if (0 == (trail_count % 2)):  # raw strings can't end in an odd number of backslashes
-						yield self._message(token, Message.USE_RAW_PREFIX)
 
 				if (quote == desired):  # check for escapes
 					if ((not self.config.avoid_escape) or ('r' in prefix)):
@@ -304,21 +222,3 @@ class QuoteChecker:
 		else:
 			for token in others:
 				yield self._message(token, USE_QUOTE_MESSAGE[self.config.inline])
-
-	def __iter__(self) -> Iterator[Tuple[Tuple[int, int], str]]:
-		"""Primary call from flake8, yield error messages."""
-		continuation: List[tokenize.TokenInfo] = []
-		for token in self.tokens:
-			if (token.type in IGNORE_TOKENS):
-				continue
-
-			if (tokenize.STRING == token.type):
-				continuation.append(token)
-				continue
-
-			for message in self._process_literals(continuation):
-				yield message
-			continuation = []
-
-		for message in self._process_literals(continuation):
-			yield message

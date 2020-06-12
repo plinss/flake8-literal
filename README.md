@@ -78,8 +78,8 @@ Error Codes
 | LIT014 | Escaped double quote is not necessary
 | LIT015 | Use double quotes for continuation strings to match
 | LIT016 | Use single quotes for continuation strings to match
-| LIT021 | Remove raw prefix when not using escapes
-| LIT022 | Use raw prefix to avoid escaped slash
+| LIT101 | Remove raw prefix when not using escapes
+| LIT102 | Use raw prefix to avoid escaped slash
 
 
 Examples

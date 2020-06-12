@@ -200,10 +200,10 @@ class TestRaw(unittest.TestCase):
 
 	def test_raw(self) -> None:
 		self.assertEqual(flake8("x = r'unnecessary raw'"), [
-			'1:5: LIT021 Remove raw prefix when not using escapes',
+			'1:5: LIT101 Remove raw prefix when not using escapes',
 		])
 		self.assertEqual(flake8(r"x = 'need \\ raw'"), [
-			'1:5: LIT022 Use raw prefix to avoid escaped slash',
+			'1:5: LIT102 Use raw prefix to avoid escaped slash',
 		])
 
 
@@ -218,7 +218,7 @@ class TestOptions(unittest.TestCase):
 			'1:13: LIT001 Use single quotes for string',
 		])
 		self.assertEqual(flake8("x = 'avoid \\\' escape'", ['no-avoid-escape']), [])  # noqa: LIT013
-		self.assertEqual(flake8("x = 'not\\raw'", ['no-avoid-escape']), [])  # noqa: LIT022
+		self.assertEqual(flake8("x = 'not\\raw'", ['no-avoid-escape']), [])  # noqa: LIT102
 		pass
 
 	def test_include_name(self) -> None:
