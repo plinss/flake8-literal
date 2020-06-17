@@ -1,8 +1,9 @@
 """Checker for quote handling on string literals."""
 
+import ast
 import tokenize
 from abc import abstractproperty
-from typing import ClassVar, FrozenSet, Iterator, List, Optional, Sequence, Set, Tuple
+from typing import ClassVar, FrozenSet, Iterator, List, Optional, Sequence, Set, Tuple, Type
 
 from typing_extensions import Protocol
 
@@ -44,26 +45,44 @@ class Message(Protocol):
 		...
 
 
+LogicalResult = Tuple[Tuple[int, int], str]  # (line, column), text
+PhysicalResult = Tuple[int, str]  # (column, text)
+ASTResult = Tuple[int, int, str, Type]  # (line, column, text, Type)
+
+
 class Checker:
-	"""Base class for literal checkers."""
+	"""Base class for checkers."""
 
 	name: ClassVar[str] = __package__.replace('_', '-')
 	version: ClassVar[str] = package_version
 	plugin_name: ClassVar[str]
 
-	tokens: Sequence[tokenize.TokenInfo]
-	_docstring_tokens: Optional[FrozenSet[tokenize.TokenInfo]]
-
 	@classmethod
 	def parse_options(cls, options: Options) -> None:
 		cls.plugin_name = (' (' + cls.name + ')') if (options.literal_include_name) else ''
 
+	def _logical_token_message(self, token: tokenize.TokenInfo, message: Message, **kwargs) -> LogicalResult:
+		return (token.start, f'{message.code}{self.plugin_name} {message.text(**kwargs)}')
+
+	def _pyhsical_token_message(self, token: tokenize.TokenInfo, message: Message, **kwargs) -> PhysicalResult:
+		return (token.start[1], f'{message.code}{self.plugin_name} {message.text(**kwargs)}')
+
+	def _ast_token_message(self, token: tokenize.TokenInfo, message: Message, **kwargs) -> ASTResult:
+		return (token.start[0], token.start[1], f'{message.code}{self.plugin_name} {message.text(**kwargs)}', type(self))
+
+	def _ast_node_message(self, node: ast.AST, message: Message, **kwargs) -> ASTResult:
+		return (node.lineno, node.col_offset, f'{message.code}{self.plugin_name} {message.text(**kwargs)}', type(self))
+
+
+class LiteralChecker(Checker):
+	"""Base class for literal checkers."""
+
+	tokens: Sequence[tokenize.TokenInfo]
+	_docstring_tokens: Optional[FrozenSet[tokenize.TokenInfo]]
+
 	def __init__(self, logical_line: str, tokens: Sequence[tokenize.TokenInfo]) -> None:
 		self.tokens = tokens
 		self._docstring_tokens = None
-
-	def _message(self, token: tokenize.TokenInfo, message: Message, **kwargs) -> Tuple[Tuple[int, int], str]:
-		return (token.start, f'{message.code}{self.plugin_name} {message.text(**kwargs)}')
 
 	@property
 	def docstring_tokens(self) -> FrozenSet[tokenize.TokenInfo]:
@@ -97,10 +116,10 @@ class Checker:
 			self._docstring_tokens = frozenset(docstrings)
 		return self._docstring_tokens
 
-	def _process_literals(self, tokens: Sequence[tokenize.TokenInfo]) -> Iterator[Tuple[Tuple[int, int], str]]:
+	def _process_literals(self, tokens: Sequence[tokenize.TokenInfo]) -> Iterator[LogicalResult]:
 		raise NotImplementedError()
 
-	def __iter__(self) -> Iterator[Tuple[Tuple[int, int], str]]:
+	def __iter__(self) -> Iterator[LogicalResult]:
 		"""Primary call from flake8, yield error messages."""
 		continuation: List[tokenize.TokenInfo] = []
 		for token in self.tokens:

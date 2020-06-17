@@ -19,7 +19,15 @@ when possible.
 
 In addition it checks the usage of raw strings,
 preventing unnecessary use of raw strings, 
-and using raw strings when doing so will avoid an escaped backslash.
+and requiring raw strings when doing so will avoid an escaped backslash.
+
+Because raw strings are commonly used in regular expression patterns,
+otherwise unnecessary raw strings are allowed by default 
+when used as a regular expression pattern.
+There is an option to avoid raw strings in regular expression patterns,
+or to require them regardless of the presence of escapes.
+Note that this feature only works when using string literals directly
+in calls to re functions.
 
 More features coming soon.
 
@@ -35,19 +43,26 @@ Standard python package installation:
 Options
 -------
 `literal-inline-quotes`
-: Quote to use for inline string literals, choices: single, double (default: single)
+: Quote to use for inline string literals, 
+choices: `single`, `double` (default: `single`)
 
 `literal-multiline-quotes`
-: Quote to use for multiline string literals, choices: single, double (default: single)
+: Quote to use for multiline string literals, 
+choices: `single`, `double` (default: `single`)
 
 `literal-docstring-quotes`
-: Quote to use for docstrings, choices: single, double (default: double)
+: Quote to use for docstrings, 
+choices: `single`, `double` (default: `double`)
 
 `literal-avoid-escape`
 : Avoid escapes in inline string literals when possible (enabled by default)
 
 `literal-no-avoid-escape`
 : Disable escape avoidance in inline string literals
+
+`literal-re-pattern-raw`
+: Control usage of raw string literals in regular expression patterns,
+choices `avoid`, `allow`, `always` (default: `allow`)
 
 `literal-include-name`
 : Include plugin name in messages
@@ -80,6 +95,7 @@ Error Codes
 | LIT016 | Use single quotes for continuation strings to match
 | LIT101 | Remove raw prefix when not using escapes
 | LIT102 | Use raw prefix to avoid escaped slash
+| LIT103 | Use raw prefix for re pattern
 
 
 Examples
@@ -91,6 +107,7 @@ x = 'aren\'t escapes great?'  <-- LIT011
 x = "can\'t stop escaping"  <-- LIT013
 x = ('one'  <-- LIT015
      "o'clock")
-x = r'no need to be raw'  <-- LIT021
-x = '\\windows\\path'  <-- LIT022
+x = r'no need to be raw'  <-- LIT101
+x = '\\windows\\path'  <-- LIT102
+x = re.compile('pattern')  <-- LIT103 (when literal-re-pattern-raw set to `always`)
 ```

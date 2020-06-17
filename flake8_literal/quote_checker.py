@@ -122,7 +122,7 @@ class Config(NamedTuple):
 	avoid_escape: bool
 
 
-class QuoteChecker(checker.Checker):
+class QuoteChecker(checker.LiteralChecker):
 	"""Check string literals for proper quotes."""
 
 	config: ClassVar[Config]
@@ -181,14 +181,14 @@ class QuoteChecker(checker.Checker):
 				if ((quote == QUOTE[self.config.docstring]) and (string[0:3] == (quote * 3))):
 					continue
 				if (quote == QUOTE[self.config.docstring]):
-					yield self._message(token, DOCSTRING_USE_TRIPLE_MESSAGE[self.config.docstring])
+					yield self._logical_token_message(token, DOCSTRING_USE_TRIPLE_MESSAGE[self.config.docstring])
 				else:
-					yield self._message(token, DOCSTRING_USE_QUOTE_MESSAGE[self.config.docstring])
+					yield self._logical_token_message(token, DOCSTRING_USE_QUOTE_MESSAGE[self.config.docstring])
 
 			elif (string[0:3] == (quote * 3)):  # multiline
 				if (quote == QUOTE[self.config.multiline]):
 					continue
-				yield self._message(token, MULTILINE_USE_QUOTE_MESSAGE[self.config.multiline])
+				yield self._logical_token_message(token, MULTILINE_USE_QUOTE_MESSAGE[self.config.multiline])
 
 			else:  # inline
 				contents = string[1:-1]
@@ -203,13 +203,13 @@ class QuoteChecker(checker.Checker):
 					if (desired in contents):
 						needs_other = True
 						should_switch.add(token)
-						yield self._message(token, AVOID_ESCAPE_MESSAGE[self.config.inline])
+						yield self._logical_token_message(token, AVOID_ESCAPE_MESSAGE[self.config.inline])
 					if ((other in contents) and (('\\' + other) in contents.replace(r'\\', ''))):
-						yield self._message(token, UNNECESSARY_ESCAPE_MESSAGE[self.config.inline])
+						yield self._logical_token_message(token, UNNECESSARY_ESCAPE_MESSAGE[self.config.inline])
 				else:
 					if ((desired in contents) and (other not in contents) and self.config.avoid_escape):
 						if (('\\' + desired) in contents.replace(r'\\', '')):
-							yield self._message(token, UNNECESSARY_OTHER_ESCAPE_MESSAGE[self.config.inline])
+							yield self._logical_token_message(token, UNNECESSARY_OTHER_ESCAPE_MESSAGE[self.config.inline])
 						needs_other = True
 						continue
 					others.append(token)
@@ -218,7 +218,7 @@ class QuoteChecker(checker.Checker):
 				quote = token.string[-1]
 				if ((quote != desired) or (token.string[-3:] == (quote * 3)) or (token in should_switch)):
 					continue
-				yield self._message(token, MATCH_CONTINUATION_MESSAGE[self.config.inline])
+				yield self._logical_token_message(token, MATCH_CONTINUATION_MESSAGE[self.config.inline])
 		else:
 			for token in others:
-				yield self._message(token, USE_QUOTE_MESSAGE[self.config.inline])
+				yield self._logical_token_message(token, USE_QUOTE_MESSAGE[self.config.inline])
