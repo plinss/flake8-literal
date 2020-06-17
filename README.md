@@ -1,5 +1,4 @@
-[flake8-literal](https://github.com/plinss/flake8-literal)
-==========
+# [flake8-literal](https://github.com/plinss/flake8-literal)
 
 flake8 plugin to validate string literals.
 
@@ -7,17 +6,23 @@ This plugin is used to enforce consistent styling of string literals,
 it recognizes inline literals, 
 multline literals,
 and docstrings.
-You can choose between single or double quotes for each type of string.
+
+### Quote Usage
+
+You can choose between single or double quotes for each type of string,
+and the plugin will enforce consistent usage.
 
 If the `avoid-escape` feature is on (default),
 it will enforce using the opposite quote type when doing so
-avoid the use of escaped quotes.
+will avoid the use of escaped quotes.
 
 It also recognizes continuation strings 
 and will enforce a consistent quote style for the entire set 
 when possible.
 
-In addition it checks the usage of raw strings,
+### Raw Strings
+
+This plugin checks the usage of raw strings,
 preventing unnecessary use of raw strings, 
 and requiring raw strings when doing so will avoid an escaped backslash.
 
@@ -27,21 +32,43 @@ when used as a regular expression pattern.
 There is an option to avoid raw strings in regular expression patterns,
 or to require them regardless of the presence of escapes.
 Note that this feature only works when using string literals directly
-in calls to re functions.
+in calls to re functions,
+and the functions must be called in the manner that they are imported. 
+e.g.
+```
+from re import compile as regex_compile
+x = regex_compile(r'this does not need to be raw')
+```
+would be acceptable, but
+```
+import re
+pattern = r'this does not need to be raw'
+x = re.compile(pattern)
+```
+or
+```
+import re
+regex_compile = re.compile
+y = regex_compile(r'this does not need to be raw')
+```
+would not.
 
-More features coming soon.
+### Planned Features
+
+* Enforcing multiline string usage
+* String concatenation 
+* Format string usage
 
 
-Installation
-------------
+## Installation
 
 Standard python package installation:
 
     pip install flake8-noqa
 
 
-Options
--------
+## Options
+
 `literal-inline-quotes`
 : Quote to use for inline string literals, 
 choices: `single`, `double` (default: `single`)
@@ -74,8 +101,7 @@ All options may be specified on the command line with a `--` prefix,
 or can be placed in your flake8 config file.
 
 
-Error Codes
------------
+## Error Codes
 
 | Code   | Message |
 |--------|---------|
@@ -98,8 +124,7 @@ Error Codes
 | LIT103 | Use raw prefix for re pattern
 
 
-Examples
---------
+## Examples
 
 ```
 x = "value"  <-- LIT001
@@ -109,5 +134,6 @@ x = ('one'  <-- LIT015
      "o'clock")
 x = r'no need to be raw'  <-- LIT101
 x = '\\windows\\path'  <-- LIT102
+x = re.compile(r'pattern')  <-- (no error when literal-re-pattern-raw set to `allow` or `always`)
 x = re.compile('pattern')  <-- LIT103 (when literal-re-pattern-raw set to `always`)
 ```
