@@ -73,6 +73,7 @@ RE_METHODS = frozenset((
 _ast_string_classes: List[type] = [ast.Constant]
 try:
 	_ast_string_classes.append(ast.Str)  # ast.Str deprecated in 3.8
+	_ast_string_classes.append(ast.Bytes)  # ast.Bytes deprecated in 3.8
 except AttributeError:
 	pass
 AST_STRINGS = tuple(_ast_string_classes)
@@ -110,9 +111,11 @@ class RawChecker(checker.Checker):
 		def _add_re_argument(node: ast.AST) -> None:
 			if (isinstance(node, AST_STRINGS)):
 				re_arguments.add((node.lineno, node.col_offset))
-			if (isinstance(node, ast.BinOp)):
+			if (isinstance(node, (ast.BinOp, ast.JoinedStr))):
 				for child in ast.iter_child_nodes(node):
 					_add_re_argument(child)
+			if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)):
+				_add_re_argument(node.func.value)
 
 		def _process_node(node: ast.AST, modules: Set[str], functions: Set[str]) -> None:
 			modules = set(modules)
