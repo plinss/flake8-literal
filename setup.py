@@ -29,7 +29,7 @@ setuptools.setup(
 	extras_require={
 		'dev': [
 			'mypy',
-			'flake8',
+			'flake8<4.0',
 			'flake8-annotations',
 			'flake8-bugbear',
 			'flake8-commas',
@@ -43,6 +43,7 @@ setuptools.setup(
 			# 'flake8-smart-tabs',
 			'flake8-type-annotations',
 			'pep8-naming',
+			'types-setuptools',
 		],
 		'test': [],
 	},
