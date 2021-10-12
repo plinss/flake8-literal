@@ -46,7 +46,7 @@ class TestQuotes(unittest.TestCase):
 		self.assertEqual(flake8("def strings(x={1:2}, y=[({3:4},)]):\n    '''function docstring'''\n    '''additional function docstring'''",
 		                        options), [])
 		self.assertEqual(flake8("x = 42\n'''variable docstring'''\n'''additional varaible docstring'''", options), [])
-		self.assertEqual(flake8("class Foo: '''inline docstring''' ;'", options), [])
+		self.assertEqual(flake8("class Foo: '''inline docstring''' ; pass", options), [])
 		self.assertEqual(flake8("def inline(x={1:2}, y=[({3:4},)]): '''inline docstring''' ; pass", options), [])
 
 		self.assertEqual(flake8('x = """multiline\n string"""', options), [])
@@ -215,8 +215,7 @@ class TestRaw(unittest.TestCase):
 
 	def test_re_raw_avoid(self) -> None:
 		options = ['re-pattern-raw=avoid']
-		self.assertEqual(flake8("import re\nx = re.compile(r'necessary\nraw')", options), [
-		])
+		self.assertEqual(flake8("import re\nx = re.compile(r'necessary\\nraw')", options), [])
 		self.assertEqual(flake8("import re\nx = re.compile(r'unnecessary raw')", options), [
 			'2:16: LIT101 Remove raw prefix when not using escapes',
 		])
@@ -244,20 +243,13 @@ class TestRaw(unittest.TestCase):
 
 	def test_re_raw_allow(self) -> None:
 		options = ['re-pattern-raw=allow']
-		self.assertEqual(flake8("import re\nx = re.compile(r'necessary\nraw')", options), [
-		])
-		self.assertEqual(flake8("import re\nx = re.compile(r'unnecessary raw')", options), [
-		])
-		self.assertEqual(flake8("import re\nx = re.compile(rb'unnecessary raw')", options), [
-		])
-		self.assertEqual(flake8("import re\nx = re.compile(r'unnecessary raw'.join([]))", options), [
-		])
-		self.assertEqual(flake8("import re as regex\nx = regex.compile(r'unnecessary raw')", options), [
-		])
-		self.assertEqual(flake8("from re import compile\nx = compile(r'unnecessary raw')", options), [
-		])
-		self.assertEqual(flake8("from re import compile as re_comp\nx = re_comp(r'unnecessary raw')", options), [
-		])
+		self.assertEqual(flake8("import re\nx = re.compile(r'necessary\\nraw')", options), [])
+		self.assertEqual(flake8("import re\nx = re.compile(r'unnecessary raw')", options), [])
+		self.assertEqual(flake8("import re\nx = re.compile(rb'unnecessary raw')", options), [])
+		self.assertEqual(flake8("import re\nx = re.compile(r'unnecessary raw'.join([]))", options), [])
+		self.assertEqual(flake8("import re as regex\nx = regex.compile(r'unnecessary raw')", options), [])
+		self.assertEqual(flake8("from re import compile\nx = compile(r'unnecessary raw')", options), [])
+		self.assertEqual(flake8("from re import compile as re_comp\nx = re_comp(r'unnecessary raw')", options), [])
 		self.assertEqual(flake8("x = re.compile(r'unnecessary raw')", options), [
 			'1:16: LIT101 Remove raw prefix when not using escapes',
 		])
@@ -267,20 +259,13 @@ class TestRaw(unittest.TestCase):
 
 	def test_re_raw_always(self) -> None:
 		options = ['re-pattern-raw=always']
-		self.assertEqual(flake8("import re\nx = re.compile(r'necessary\nraw')", options), [
-		])
-		self.assertEqual(flake8("import re\nx = re.compile(r'unnecessary raw')", options), [
-		])
-		self.assertEqual(flake8("import re\nx = re.compile(rb'unnecessary raw')", options), [
-		])
-		self.assertEqual(flake8("import re\nx = re.compile(r'unnecessary raw'.join([]))", options), [
-		])
-		self.assertEqual(flake8("import re as regex\nx = regex.compile(r'unnecessary raw')", options), [
-		])
-		self.assertEqual(flake8("from re import compile\nx = compile(r'unnecessary raw')", options), [
-		])
-		self.assertEqual(flake8("from re import compile as re_comp\nx = re_comp(r'unnecessary raw')", options), [
-		])
+		self.assertEqual(flake8("import re\nx = re.compile(r'necessary\\nraw')", options), [])
+		self.assertEqual(flake8("import re\nx = re.compile(r'unnecessary raw')", options), [])
+		self.assertEqual(flake8("import re\nx = re.compile(rb'unnecessary raw')", options), [])
+		self.assertEqual(flake8("import re\nx = re.compile(r'unnecessary raw'.join([]))", options), [])
+		self.assertEqual(flake8("import re as regex\nx = regex.compile(r'unnecessary raw')", options), [])
+		self.assertEqual(flake8("from re import compile\nx = compile(r'unnecessary raw')", options), [])
+		self.assertEqual(flake8("from re import compile as re_comp\nx = re_comp(r'unnecessary raw')", options), [])
 		self.assertEqual(flake8("x = re.compile(r'unnecessary raw')", options), [
 			'1:16: LIT101 Remove raw prefix when not using escapes',
 		])
