@@ -22,7 +22,7 @@ setuptools.setup(
 	package_data={'flake8_literal': ['py.typed']},
 
 	install_requires=[
-		'flake8>=3.8.0,<4.0',
+		'flake8>=3.8.0,<5.0',
 		'setuptools>=40.0.0',
 		'typing_extensions>=3.7.4.2,<4.0',
 	],
