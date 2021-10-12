@@ -114,7 +114,7 @@ or can be placed in your flake8 config file.
 | LIT007 | Use triple single quotes for docstring
 | LIT008 | Use triple double quotes for docstring
 | LIT011 | Use double quotes for string to avoid escaped single quote
-| LIT012 | Use single quotes for string to avoid escaped single quote
+| LIT012 | Use single quotes for string to avoid escaped double quote
 | LIT013 | Escaped single quote is not necessary
 | LIT014 | Escaped double quote is not necessary
 | LIT015 | Use double quotes for continuation strings to match
