@@ -29,7 +29,7 @@ setuptools.setup(
 	extras_require={
 		'dev': [
 			'mypy',
-			'flake8<4.0',
+			'flake8',
 			'flake8-annotations',
 			'flake8-bugbear',
 			'flake8-commas',
@@ -39,9 +39,10 @@ setuptools.setup(
 			'flake8-import-order',
 			'flake8-noqa',
 			'flake8-polyfill',
+			'flake8-postponed-annotations',
 			'flake8-tabs',
 			# 'flake8-smart-tabs',
-			'flake8-type-annotations',
+			'flake8-typechecking-import',
 			'pep8-naming',
 			'types-setuptools',
 		],
@@ -54,7 +55,6 @@ setuptools.setup(
 		'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
 		'Programming Language :: Python',
 		'Programming Language :: Python :: 3',
-		'Programming Language :: Python :: 3.6',
 		'Programming Language :: Python :: 3.7',
 		'Programming Language :: Python :: 3.8',
 		'Programming Language :: Python :: 3.9',
@@ -62,7 +62,7 @@ setuptools.setup(
 		'Topic :: Software Development :: Libraries :: Python Modules',
 		'Topic :: Software Development :: Quality Assurance',
 	],
-	python_requires='>=3.6',
+	python_requires='>=3.7',
 	entry_points={
 		'flake8.extension': [
 			f'{flake8_literal.quote_checker_prefix} = flake8_literal.quote_checker:QuoteChecker',

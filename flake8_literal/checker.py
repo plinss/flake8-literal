@@ -1,11 +1,15 @@
 """Checker for quote handling on string literals."""
 
-import ast
+from __future__ import annotations
+
 import tokenize
 from abc import abstractproperty
-from typing import ClassVar, FrozenSet, Iterator, List, Optional, Sequence, Set, Tuple, Type
+from typing import ClassVar, FrozenSet, Iterator, List, Optional, Sequence, Set, TYPE_CHECKING, Tuple, Type
 
 from typing_extensions import Protocol
+
+if (TYPE_CHECKING):
+	import ast
 
 
 try:

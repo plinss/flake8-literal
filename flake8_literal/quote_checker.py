@@ -1,14 +1,17 @@
 """Checker for quote handling on string literals."""
 
-import enum
-import tokenize
-from typing import ClassVar, Iterator, NamedTuple, Optional, Sequence, Tuple
+from __future__ import annotations
 
-from flake8.options.manager import OptionManager
+import enum
+from typing import ClassVar, Iterator, NamedTuple, Optional, Sequence, TYPE_CHECKING, Tuple
 
 import flake8_literal
 
 from . import checker
+
+if (TYPE_CHECKING):
+	import tokenize
+	from flake8.options.manager import OptionManager
 
 
 class Message(enum.Enum):
@@ -46,7 +49,7 @@ class QuoteType(enum.Enum):
 	DOUBLE = 'double'
 
 	@classmethod
-	def from_str(cls, value: str) -> Optional['QuoteType']:
+	def from_str(cls, value: str) -> Optional[QuoteType]:
 		for member in cls.__members__.values():
 			if (value.lower() == member.value):
 				return member

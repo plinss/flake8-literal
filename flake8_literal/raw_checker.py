@@ -1,15 +1,18 @@
 """Checker for raw string literals."""
 
+from __future__ import annotations
+
 import ast
 import enum
 import tokenize
-from typing import ClassVar, Iterator, List, NamedTuple, Optional, Sequence, Set, Tuple
-
-from flake8.options.manager import OptionManager
+from typing import ClassVar, Iterator, List, NamedTuple, Optional, Sequence, Set, TYPE_CHECKING, Tuple
 
 import flake8_literal
 
 from . import checker
+
+if (TYPE_CHECKING):
+	from flake8.options.manager import OptionManager
 
 
 class Message(enum.Enum):
@@ -35,7 +38,7 @@ class RePatternRaw(enum.Enum):
 	ALWAYS = 'always'
 
 	@classmethod
-	def from_str(cls, value: str) -> Optional['RePatternRaw']:
+	def from_str(cls, value: str) -> Optional[RePatternRaw]:
 		for member in cls.__members__.values():
 			if (value.lower() == member.value):
 				return member
