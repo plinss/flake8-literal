@@ -64,7 +64,7 @@ would not.
 
 Standard python package installation:
 
-    pip install flake8-noqa
+    pip install flake8-literal
 
 
 ## Options
