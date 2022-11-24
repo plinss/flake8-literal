@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import enum
-from typing import ClassVar, Iterator, NamedTuple, Optional, Sequence, TYPE_CHECKING, Tuple
+from typing import ClassVar, NamedTuple, TYPE_CHECKING
 
 import flake8_literal
 
@@ -11,6 +11,7 @@ from . import checker
 
 if (TYPE_CHECKING):
 	import tokenize
+	from collections.abc import Iterator, Sequence
 	from flake8.options.manager import OptionManager
 
 
@@ -49,7 +50,7 @@ class QuoteType(enum.Enum):
 	DOUBLE = 'double'
 
 	@classmethod
-	def from_str(cls, value: str) -> Optional[QuoteType]:
+	def from_str(cls, value: str) -> (QuoteType | None):
 		for member in cls.__members__.values():
 			if (value.lower() == member.value):
 				return member
@@ -165,7 +166,7 @@ class QuoteChecker(checker.LiteralChecker):
 		                    docstring=QuoteType.from_str(options.literal_docstring) or QuoteType.DOUBLE,
 		                    avoid_escape=options.literal_avoid_escape)
 
-	def _process_literals(self, tokens: Sequence[tokenize.TokenInfo]) -> Iterator[Tuple[Tuple[int, int], str]]:
+	def _process_literals(self, tokens: Sequence[tokenize.TokenInfo]) -> Iterator[tuple[tuple[int, int], str]]:
 		if (not tokens):
 			return
 

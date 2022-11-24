@@ -5,13 +5,14 @@ from __future__ import annotations
 import ast
 import enum
 import tokenize
-from typing import ClassVar, Iterator, List, NamedTuple, Optional, Sequence, Set, TYPE_CHECKING, Tuple
+from typing import ClassVar, NamedTuple, TYPE_CHECKING
 
 import flake8_literal
 
 from . import checker
 
 if (TYPE_CHECKING):
+	from collections.abc import Iterator, Sequence
 	from flake8.options.manager import OptionManager
 
 
@@ -38,7 +39,7 @@ class RePatternRaw(enum.Enum):
 	ALWAYS = 'always'
 
 	@classmethod
-	def from_str(cls, value: str) -> Optional[RePatternRaw]:
+	def from_str(cls, value: str) -> (RePatternRaw | None):
 		for member in cls.__members__.values():
 			if (value.lower() == member.value):
 				return member
@@ -73,7 +74,7 @@ RE_METHODS = frozenset((
 ))
 
 
-_ast_string_classes: List[type] = [ast.Constant]
+_ast_string_classes: list[type] = [ast.Constant]
 try:
 	_ast_string_classes.append(ast.Str)  # ast.Str deprecated in 3.8
 	_ast_string_classes.append(ast.Bytes)  # ast.Bytes deprecated in 3.8
@@ -88,7 +89,7 @@ class RawChecker(checker.Checker):
 	config: ClassVar[Config]
 
 	tokens: Sequence[tokenize.TokenInfo]
-	re_arguments: Set[Tuple[int, int]]
+	re_arguments: set[tuple[int, int]]
 
 	@classmethod
 	def add_options(cls, option_manager: OptionManager) -> None:
@@ -108,8 +109,8 @@ class RawChecker(checker.Checker):
 		self.tokens = file_tokens
 		self.re_arguments = self._find_re_arguments(tree)
 
-	def _find_re_arguments(self, tree: ast.AST) -> Set[Tuple[int, int]]:
-		re_arguments: Set[Tuple[int, int]] = set()
+	def _find_re_arguments(self, tree: ast.AST) -> set[tuple[int, int]]:
+		re_arguments: set[tuple[int, int]] = set()
 
 		def _add_re_argument(node: ast.AST) -> None:
 			if (isinstance(node, AST_STRINGS)):
@@ -120,7 +121,7 @@ class RawChecker(checker.Checker):
 			if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)):
 				_add_re_argument(node.func.value)
 
-		def _process_node(node: ast.AST, modules: Set[str], functions: Set[str]) -> None:
+		def _process_node(node: ast.AST, modules: set[str], functions: set[str]) -> None:
 			modules = set(modules)
 			functions = set(functions)
 			for child in ast.iter_child_nodes(node):
@@ -179,7 +180,7 @@ class RawChecker(checker.Checker):
 
 	def __iter__(self) -> Iterator[checker.ASTResult]:
 		"""Primary call from flake8, yield error messages."""
-		continuation: List[tokenize.TokenInfo] = []
+		continuation: list[tokenize.TokenInfo] = []
 		for token in self.tokens:
 			if (token.type in checker.IGNORE_TOKENS):
 				continue

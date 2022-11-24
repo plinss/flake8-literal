@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import tokenize
 from abc import abstractproperty
-from typing import ClassVar, FrozenSet, Iterator, List, Optional, Sequence, Set, TYPE_CHECKING, Tuple, Type
+from typing import ClassVar, TYPE_CHECKING, Tuple
 
 from typing_extensions import Protocol
 
 if (TYPE_CHECKING):
 	import ast
+	from collections.abc import Iterator, Sequence
 
 
 try:
@@ -54,7 +55,7 @@ class Message(Protocol):
 
 LogicalResult = Tuple[Tuple[int, int], str]  # (line, column), text
 PhysicalResult = Tuple[int, str]  # (column, text)
-ASTResult = Tuple[int, int, str, Type]  # (line, column, text, Type)
+ASTResult = Tuple[int, int, str, type]  # (line, column, text, type)
 
 
 class Checker:
@@ -85,17 +86,17 @@ class LiteralChecker(Checker):
 	"""Base class for literal checkers."""
 
 	tokens: Sequence[tokenize.TokenInfo]
-	_docstring_tokens: Optional[FrozenSet[tokenize.TokenInfo]]
+	_docstring_tokens: (frozenset[tokenize.TokenInfo] | None)
 
 	def __init__(self, logical_line: str, tokens: Sequence[tokenize.TokenInfo]) -> None:
 		self.tokens = tokens
 		self._docstring_tokens = None
 
 	@property
-	def docstring_tokens(self) -> FrozenSet[tokenize.TokenInfo]:
+	def docstring_tokens(self) -> frozenset[tokenize.TokenInfo]:
 		"""Find docstring tokens, which are initial strings or strings immediately after class or function defs."""
 		if (self._docstring_tokens is None):
-			docstrings: Set[tokenize.TokenInfo] = set()
+			docstrings: set[tokenize.TokenInfo] = set()
 			expect_docstring = True
 			expect_colon = False
 			bracket_depth = 0
@@ -128,7 +129,7 @@ class LiteralChecker(Checker):
 
 	def __iter__(self) -> Iterator[LogicalResult]:
 		"""Primary call from flake8, yield error messages."""
-		continuation: List[tokenize.TokenInfo] = []
+		continuation: list[tokenize.TokenInfo] = []
 		for token in self.tokens:
 			if (token.type in IGNORE_TOKENS):
 				continue
