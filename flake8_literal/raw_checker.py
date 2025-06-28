@@ -13,6 +13,7 @@ from . import checker
 
 if (TYPE_CHECKING):
 	from collections.abc import Iterator, Sequence
+
 	from flake8.options.manager import OptionManager
 
 
@@ -74,15 +75,6 @@ RE_METHODS = frozenset((
 ))
 
 
-_ast_string_classes: list[type] = [ast.Constant]
-try:
-	_ast_string_classes.append(ast.Str)  # ast.Str deprecated in 3.8
-	_ast_string_classes.append(ast.Bytes)  # ast.Bytes deprecated in 3.8
-except AttributeError:
-	pass
-AST_STRINGS = tuple(_ast_string_classes)
-
-
 class RawChecker(checker.Checker):
 	"""Check string literals for proper raw usage."""
 
@@ -113,7 +105,7 @@ class RawChecker(checker.Checker):
 		re_arguments: set[tuple[int, int]] = set()
 
 		def _add_re_argument(node: ast.AST) -> None:
-			if (isinstance(node, AST_STRINGS)):
+			if (isinstance(node, ast.Constant)):
 				re_arguments.add((node.lineno, node.col_offset))
 			if (isinstance(node, (ast.BinOp, ast.JoinedStr))):
 				for child in ast.iter_child_nodes(node):

@@ -12,6 +12,7 @@ from . import checker
 if (TYPE_CHECKING):
 	import tokenize
 	from collections.abc import Iterator, Sequence
+
 	from flake8.options.manager import OptionManager
 
 
